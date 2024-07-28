@@ -1,0 +1,724 @@
+[parquet/src/arrow/schema/mod.rs:91:5] &field_levels.levels = Some(
+    ParquetField {
+        rep_level: 0,
+        def_level: 0,
+        nullable: false,
+        arrow_type: Struct(
+            [
+                Field {
+                    name: "a",
+                    data_type: List(
+                        Field {
+                            name: "a",
+                            data_type: Int32,
+                            nullable: false,
+                            dict_id: 0,
+                            dict_is_ordered: false,
+                            metadata: {},
+                        },
+                    ),
+                    nullable: false,
+                    dict_id: 0,
+                    dict_is_ordered: false,
+                    metadata: {},
+                },
+                Field {
+                    name: "b",
+                    data_type: Int32,
+                    nullable: false,
+                    dict_id: 0,
+                    dict_is_ordered: false,
+                    metadata: {},
+                },
+                Field {
+                    name: "table_info",
+                    data_type: List(
+                        Field {
+                            name: "table_info",
+                            data_type: Struct(
+                                [
+                                    Field {
+                                        name: "name",
+                                        data_type: Binary,
+                                        nullable: false,
+                                        dict_id: 0,
+                                        dict_is_ordered: false,
+                                        metadata: {},
+                                    },
+                                    Field {
+                                        name: "cols",
+                                        data_type: Struct(
+                                            [
+                                                Field {
+                                                    name: "name",
+                                                    data_type: Binary,
+                                                    nullable: false,
+                                                    dict_id: 0,
+                                                    dict_is_ordered: false,
+                                                    metadata: {},
+                                                },
+                                                Field {
+                                                    name: "type",
+                                                    data_type: Int32,
+                                                    nullable: false,
+                                                    dict_id: 0,
+                                                    dict_is_ordered: false,
+                                                    metadata: {},
+                                                },
+                                                Field {
+                                                    name: "length",
+                                                    data_type: Int32,
+                                                    nullable: true,
+                                                    dict_id: 0,
+                                                    dict_is_ordered: false,
+                                                    metadata: {},
+                                                },
+                                            ],
+                                        ),
+                                        nullable: false,
+                                        dict_id: 0,
+                                        dict_is_ordered: false,
+                                        metadata: {},
+                                    },
+                                    Field {
+                                        name: "tags",
+                                        data_type: List(
+                                            Field {
+                                                name: "tags",
+                                                data_type: Struct(
+                                                    [
+                                                        Field {
+                                                            name: "name",
+                                                            data_type: Binary,
+                                                            nullable: false,
+                                                            dict_id: 0,
+                                                            dict_is_ordered: false,
+                                                            metadata: {},
+                                                        },
+                                                        Field {
+                                                            name: "type",
+                                                            data_type: Int32,
+                                                            nullable: false,
+                                                            dict_id: 0,
+                                                            dict_is_ordered: false,
+                                                            metadata: {},
+                                                        },
+                                                        Field {
+                                                            name: "length",
+                                                            data_type: Int32,
+                                                            nullable: true,
+                                                            dict_id: 0,
+                                                            dict_is_ordered: false,
+                                                            metadata: {},
+                                                        },
+                                                    ],
+                                                ),
+                                                nullable: false,
+                                                dict_id: 0,
+                                                dict_is_ordered: false,
+                                                metadata: {},
+                                            },
+                                        ),
+                                        nullable: false,
+                                        dict_id: 0,
+                                        dict_is_ordered: false,
+                                        metadata: {},
+                                    },
+                                ],
+                            ),
+                            nullable: false,
+                            dict_id: 0,
+                            dict_is_ordered: false,
+                            metadata: {},
+                        },
+                    ),
+                    nullable: false,
+                    dict_id: 0,
+                    dict_is_ordered: false,
+                    metadata: {},
+                },
+            ],
+        ),
+
+
+
+
+
+
+        field_type: Group {
+            children: [
+                ParquetField {
+                    rep_level: 1,
+                    def_level: 1,
+                    nullable: false,
+                    arrow_type: List(
+                        Field {
+                            name: "a",
+                            data_type: Int32,
+                            nullable: false,
+                            dict_id: 0,
+                            dict_is_ordered: false,
+                            metadata: {},
+                        },
+                    ),
+                    field_type: Group {
+                        children: [
+                            ParquetField {
+                                rep_level: 1,
+                                def_level: 1,
+                                nullable: false,
+                                arrow_type: Int32,
+                                field_type: Primitive {
+                                    col_idx: 0,
+                                    primitive_type: PrimitiveType {
+                                        basic_info: BasicTypeInfo {
+                                            name: "a",
+                                            repetition: Some(
+                                                REPEATED,
+                                            ),
+                                            converted_type: NONE,
+                                            logical_type: None,
+                                            id: None,
+                                        },
+                                        physical_type: INT32,
+                                        type_length: -1,
+                                        scale: -1,
+                                        precision: -1,
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                },
+
+
+                ParquetField {
+                    rep_level: 0,
+                    def_level: 0,
+                    nullable: false,
+                    arrow_type: Int32,
+                    field_type: Primitive {
+                        col_idx: 1,
+                        primitive_type: PrimitiveType {
+                            basic_info: BasicTypeInfo {
+                                name: "b",
+                                repetition: Some(
+                                    REQUIRED,
+                                ),
+                                converted_type: NONE,
+                                logical_type: None,
+                                id: None,
+                            },
+                            physical_type: INT32,
+                            type_length: -1,
+                            scale: -1,
+                            precision: -1,
+                        },
+                    },
+                },
+
+
+                ParquetField {
+                    rep_level: 1,
+                    def_level: 1,
+                    nullable: false,
+                    arrow_type: List(
+                        Field {
+                            name: "table_info",
+                            data_type: Struct(
+                                [
+                                    Field {
+                                        name: "name",
+                                        data_type: Binary,
+                                        nullable: false,
+                                        dict_id: 0,
+                                        dict_is_ordered: false,
+                                        metadata: {},
+                                    },
+                                    Field {
+                                        name: "cols",
+                                        data_type: Struct(
+                                            [
+                                                Field {
+                                                    name: "name",
+                                                    data_type: Binary,
+                                                    nullable: false,
+                                                    dict_id: 0,
+                                                    dict_is_ordered: false,
+                                                    metadata: {},
+                                                },
+                                                Field {
+                                                    name: "type",
+                                                    data_type: Int32,
+                                                    nullable: false,
+                                                    dict_id: 0,
+                                                    dict_is_ordered: false,
+                                                    metadata: {},
+                                                },
+                                                Field {
+                                                    name: "length",
+                                                    data_type: Int32,
+                                                    nullable: true,
+                                                    dict_id: 0,
+                                                    dict_is_ordered: false,
+                                                    metadata: {},
+                                                },
+                                            ],
+                                        ),
+                                        nullable: false,
+                                        dict_id: 0,
+                                        dict_is_ordered: false,
+                                        metadata: {},
+                                    },
+                                    Field {
+                                        name: "tags",
+                                        data_type: List(
+                                            Field {
+                                                name: "tags",
+                                                data_type: Struct(
+                                                    [
+                                                        Field {
+                                                            name: "name",
+                                                            data_type: Binary,
+                                                            nullable: false,
+                                                            dict_id: 0,
+                                                            dict_is_ordered: false,
+                                                            metadata: {},
+                                                        },
+                                                        Field {
+                                                            name: "type",
+                                                            data_type: Int32,
+                                                            nullable: false,
+                                                            dict_id: 0,
+                                                            dict_is_ordered: false,
+                                                            metadata: {},
+                                                        },
+                                                        Field {
+                                                            name: "length",
+                                                            data_type: Int32,
+                                                            nullable: true,
+                                                            dict_id: 0,
+                                                            dict_is_ordered: false,
+                                                            metadata: {},
+                                                        },
+                                                    ],
+                                                ),
+                                                nullable: false,
+                                                dict_id: 0,
+                                                dict_is_ordered: false,
+                                                metadata: {},
+                                            },
+                                        ),
+                                        nullable: false,
+                                        dict_id: 0,
+                                        dict_is_ordered: false,
+                                        metadata: {},
+                                    },
+                                ],
+                            ),
+                            nullable: false,
+                            dict_id: 0,
+                            dict_is_ordered: false,
+                            metadata: {},
+                        },
+                    ),
+
+
+                    
+                    field_type: Group {
+                        children: [
+                            ParquetField {
+                                rep_level: 1,
+                                def_level: 1,
+                                nullable: false,
+                                arrow_type: Struct(
+                                    [
+                                        Field {
+                                            name: "name",
+                                            data_type: Binary,
+                                            nullable: false,
+                                            dict_id: 0,
+                                            dict_is_ordered: false,
+                                            metadata: {},
+                                        },
+                                        Field {
+                                            name: "cols",
+                                            data_type: Struct(
+                                                [
+                                                    Field {
+                                                        name: "name",
+                                                        data_type: Binary,
+                                                        nullable: false,
+                                                        dict_id: 0,
+                                                        dict_is_ordered: false,
+                                                        metadata: {},
+                                                    },
+                                                    Field {
+                                                        name: "type",
+                                                        data_type: Int32,
+                                                        nullable: false,
+                                                        dict_id: 0,
+                                                        dict_is_ordered: false,
+                                                        metadata: {},
+                                                    },
+                                                    Field {
+                                                        name: "length",
+                                                        data_type: Int32,
+                                                        nullable: true,
+                                                        dict_id: 0,
+                                                        dict_is_ordered: false,
+                                                        metadata: {},
+                                                    },
+                                                ],
+                                            ),
+                                            nullable: false,
+                                            dict_id: 0,
+                                            dict_is_ordered: false,
+                                            metadata: {},
+                                        },
+                                        Field {
+                                            name: "tags",
+                                            data_type: List(
+                                                Field {
+                                                    name: "tags",
+                                                    data_type: Struct(
+                                                        [
+                                                            Field {
+                                                                name: "name",
+                                                                data_type: Binary,
+                                                                nullable: false,
+                                                                dict_id: 0,
+                                                                dict_is_ordered: false,
+                                                                metadata: {},
+                                                            },
+                                                            Field {
+                                                                name: "type",
+                                                                data_type: Int32,
+                                                                nullable: false,
+                                                                dict_id: 0,
+                                                                dict_is_ordered: false,
+                                                                metadata: {},
+                                                            },
+                                                            Field {
+                                                                name: "length",
+                                                                data_type: Int32,
+                                                                nullable: true,
+                                                                dict_id: 0,
+                                                                dict_is_ordered: false,
+                                                                metadata: {},
+                                                            },
+                                                        ],
+                                                    ),
+                                                    nullable: false,
+                                                    dict_id: 0,
+                                                    dict_is_ordered: false,
+                                                    metadata: {},
+                                                },
+                                            ),
+                                            nullable: false,
+                                            dict_id: 0,
+                                            dict_is_ordered: false,
+                                            metadata: {},
+                                        },
+                                    ],
+                                ),
+                                field_type: Group {
+                                    children: [
+                                        ParquetField {
+                                            rep_level: 1,
+                                            def_level: 1,
+                                            nullable: false,
+                                            arrow_type: Binary,
+                                            field_type: Primitive {
+                                                col_idx: 2,
+                                                primitive_type: PrimitiveType {
+                                                    basic_info: BasicTypeInfo {
+                                                        name: "name",
+                                                        repetition: Some(
+                                                            REQUIRED,
+                                                        ),
+                                                        converted_type: NONE,
+                                                        logical_type: None,
+                                                        id: None,
+                                                    },
+                                                    physical_type: BYTE_ARRAY,
+                                                    type_length: -1,
+                                                    scale: -1,
+                                                    precision: -1,
+                                                },
+                                            },
+                                        },
+                                        ParquetField {
+                                            rep_level: 1,
+                                            def_level: 1,
+                                            nullable: false,
+                                            arrow_type: Struct(
+                                                [
+                                                    Field {
+                                                        name: "name",
+                                                        data_type: Binary,
+                                                        nullable: false,
+                                                        dict_id: 0,
+                                                        dict_is_ordered: false,
+                                                        metadata: {},
+                                                    },
+                                                    Field {
+                                                        name: "type",
+                                                        data_type: Int32,
+                                                        nullable: false,
+                                                        dict_id: 0,
+                                                        dict_is_ordered: false,
+                                                        metadata: {},
+                                                    },
+                                                    Field {
+                                                        name: "length",
+                                                        data_type: Int32,
+                                                        nullable: true,
+                                                        dict_id: 0,
+                                                        dict_is_ordered: false,
+                                                        metadata: {},
+                                                    },
+                                                ],
+                                            ),
+                                            field_type: Group {
+                                                children: [
+                                                    ParquetField {
+                                                        rep_level: 1,
+                                                        def_level: 1,
+                                                        nullable: false,
+                                                        arrow_type: Binary,
+                                                        field_type: Primitive {
+                                                            col_idx: 3,
+                                                            primitive_type: PrimitiveType {
+                                                                basic_info: BasicTypeInfo {
+                                                                    name: "name",
+                                                                    repetition: Some(
+                                                                        REQUIRED,
+                                                                    ),
+                                                                    converted_type: NONE,
+                                                                    logical_type: None,
+                                                                    id: None,
+                                                                },
+                                                                physical_type: BYTE_ARRAY,
+                                                                type_length: -1,
+                                                                scale: -1,
+                                                                precision: -1,
+                                                            },
+                                                        },
+                                                    },
+                                                    ParquetField {
+                                                        rep_level: 1,
+                                                        def_level: 1,
+                                                        nullable: false,
+                                                        arrow_type: Int32,
+                                                        field_type: Primitive {
+                                                            col_idx: 4,
+                                                            primitive_type: PrimitiveType {
+                                                                basic_info: BasicTypeInfo {
+                                                                    name: "type",
+                                                                    repetition: Some(
+                                                                        REQUIRED,
+                                                                    ),
+                                                                    converted_type: NONE,
+                                                                    logical_type: None,
+                                                                    id: None,
+                                                                },
+                                                                physical_type: INT32,
+                                                                type_length: -1,
+                                                                scale: -1,
+                                                                precision: -1,
+                                                            },
+                                                        },
+                                                    },
+                                                    ParquetField {
+                                                        rep_level: 1,
+                                                        def_level: 2,
+                                                        nullable: true,
+                                                        arrow_type: Int32,
+                                                        field_type: Primitive {
+                                                            col_idx: 5,
+                                                            primitive_type: PrimitiveType {
+                                                                basic_info: BasicTypeInfo {
+                                                                    name: "length",
+                                                                    repetition: Some(
+                                                                        OPTIONAL,
+                                                                    ),
+                                                                    converted_type: NONE,
+                                                                    logical_type: None,
+                                                                    id: None,
+                                                                },
+                                                                physical_type: INT32,
+                                                                type_length: -1,
+                                                                scale: -1,
+                                                                precision: -1,
+                                                            },
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                        ParquetField {
+                                            rep_level: 2,
+                                            def_level: 2,
+                                            nullable: false,
+                                            arrow_type: List(
+                                                Field {
+                                                    name: "tags",
+                                                    data_type: Struct(
+                                                        [
+                                                            Field {
+                                                                name: "name",
+                                                                data_type: Binary,
+                                                                nullable: false,
+                                                                dict_id: 0,
+                                                                dict_is_ordered: false,
+                                                                metadata: {},
+                                                            },
+                                                            Field {
+                                                                name: "type",
+                                                                data_type: Int32,
+                                                                nullable: false,
+                                                                dict_id: 0,
+                                                                dict_is_ordered: false,
+                                                                metadata: {},
+                                                            },
+                                                            Field {
+                                                                name: "length",
+                                                                data_type: Int32,
+                                                                nullable: true,
+                                                                dict_id: 0,
+                                                                dict_is_ordered: false,
+                                                                metadata: {},
+                                                            },
+                                                        ],
+                                                    ),
+                                                    nullable: false,
+                                                    dict_id: 0,
+                                                    dict_is_ordered: false,
+                                                    metadata: {},
+                                                },
+                                            ),
+                                            field_type: Group {
+                                                children: [
+                                                    ParquetField {
+                                                        rep_level: 2,
+                                                        def_level: 2,
+                                                        nullable: false,
+                                                        arrow_type: Struct(
+                                                            [
+                                                                Field {
+                                                                    name: "name",
+                                                                    data_type: Binary,
+                                                                    nullable: false,
+                                                                    dict_id: 0,
+                                                                    dict_is_ordered: false,
+                                                                    metadata: {},
+                                                                },
+                                                                Field {
+                                                                    name: "type",
+                                                                    data_type: Int32,
+                                                                    nullable: false,
+                                                                    dict_id: 0,
+                                                                    dict_is_ordered: false,
+                                                                    metadata: {},
+                                                                },
+                                                                Field {
+                                                                    name: "length",
+                                                                    data_type: Int32,
+                                                                    nullable: true,
+                                                                    dict_id: 0,
+                                                                    dict_is_ordered: false,
+                                                                    metadata: {},
+                                                                },
+                                                            ],
+                                                        ),
+                                                        field_type: Group {
+                                                            children: [
+                                                                ParquetField {
+                                                                    rep_level: 2,
+                                                                    def_level: 2,
+                                                                    nullable: false,
+                                                                    arrow_type: Binary,
+                                                                    field_type: Primitive {
+                                                                        col_idx: 6,
+                                                                        primitive_type: PrimitiveType {
+                                                                            basic_info: BasicTypeInfo {
+                                                                                name: "name",
+                                                                                repetition: Some(
+                                                                                    REQUIRED,
+                                                                                ),
+                                                                                converted_type: NONE,
+                                                                                logical_type: None,
+                                                                                id: None,
+                                                                            },
+                                                                            physical_type: BYTE_ARRAY,
+                                                                            type_length: -1,
+                                                                            scale: -1,
+                                                                            precision: -1,
+                                                                        },
+                                                                    },
+                                                                },
+                                                                ParquetField {
+                                                                    rep_level: 2,
+                                                                    def_level: 2,
+                                                                    nullable: false,
+                                                                    arrow_type: Int32,
+                                                                    field_type: Primitive {
+                                                                        col_idx: 7,
+                                                                        primitive_type: PrimitiveType {
+                                                                            basic_info: BasicTypeInfo {
+                                                                                name: "type",
+                                                                                repetition: Some(
+                                                                                    REQUIRED,
+                                                                                ),
+                                                                                converted_type: NONE,
+                                                                                logical_type: None,
+                                                                                id: None,
+                                                                            },
+                                                                            physical_type: INT32,
+                                                                            type_length: -1,
+                                                                            scale: -1,
+                                                                            precision: -1,
+                                                                        },
+                                                                    },
+                                                                },
+                                                                ParquetField {
+                                                                    rep_level: 2,
+                                                                    def_level: 3,
+                                                                    nullable: true,
+                                                                    arrow_type: Int32,
+                                                                    field_type: Primitive {
+                                                                        col_idx: 8,
+                                                                        primitive_type: PrimitiveType {
+                                                                            basic_info: BasicTypeInfo {
+                                                                                name: "length",
+                                                                                repetition: Some(
+                                                                                    OPTIONAL,
+                                                                                ),
+                                                                                converted_type: NONE,
+                                                                                logical_type: None,
+                                                                                id: None,
+                                                                            },
+                                                                            physical_type: INT32,
+                                                                            type_length: -1,
+                                                                            scale: -1,
+                                                                            precision: -1,
+                                                                        },
+                                                                    },
+                                                                },
+                                                            ],
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                    ],
+                                },
+                            },
+                        ],
+                    },
+                },
+            ],
+        },
+    },
+)
