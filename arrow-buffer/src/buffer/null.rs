@@ -138,10 +138,10 @@ impl NullBuffer {
     #[inline]
     pub fn null_count(&self) -> usize {
         // Check null count cache to know if it has been computed
-        let cached_null_count = self.null_count.load(Ordering::Relaxed);
+        let cached_null_count = self.null_count.load(Ordering::Acquire);
         if cached_null_count == UNKNOWN_NULL_COUNT {
             let computed_null_count = self.buffer.len() - self.buffer.count_set_bits();
-            self.null_count.store(computed_null_count as i64, Ordering::Relaxed);
+            self.null_count.store(computed_null_count as i64, Ordering::Release);
             computed_null_count as usize
         } else {
             cached_null_count as usize
