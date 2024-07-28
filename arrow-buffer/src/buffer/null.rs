@@ -15,6 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
+use std::intrinsics::likely;
 use std::sync::atomic::{AtomicI64, AtomicU64, AtomicUsize, Ordering};
 use std::sync::Arc;
 
@@ -138,14 +139,15 @@ impl NullBuffer {
     #[inline]
     pub fn null_count(&self) -> usize {
         // Check null count cache to know if it has been computed
-        let cached_null_count = self.null_count.load(Ordering::Acquire);
-        if cached_null_count == UNKNOWN_NULL_COUNT {
-            let computed_null_count = self.buffer.len() - self.buffer.count_set_bits();
-            self.null_count.store(computed_null_count as i64, Ordering::Release);
-            computed_null_count as usize
-        } else {
-            cached_null_count as usize
+        let cached_null_count = self.null_count.load(Ordering::SeqCst);
+        if cached_null_count >= 0 {
+            return cached_null_count as usize;
         }
+
+        let computed_null_count = self.buffer.len() - self.buffer.count_set_bits();
+        self.null_count.store(computed_null_count as i64, Ordering::SeqCst);
+
+        computed_null_count as usize
     }
 
     /// Returns `true` if the value at `idx` is not null
