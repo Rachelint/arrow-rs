@@ -772,14 +772,6 @@ pub trait InProgressArray: std::fmt::Debug + Send + Sync {
     /// Return an error if the source array is not set
     fn copy_rows(&mut self, offset: usize, len: usize) -> Result<(), ArrowError>;
 
-    /// Copy a contiguous range while packing byte-view values into buffers
-    /// owned by the destination. Other array types use [`Self::copy_rows`].
-    /// This is useful when the destination must not retain a large shared
-    /// source buffer, for example when building independently freed buckets.
-    fn copy_rows_compact(&mut self, offset: usize, len: usize) -> Result<(), ArrowError> {
-        self.copy_rows(offset, len)
-    }
-
     /// Copy rows selected by `filter` from the current source array.
     ///
     /// The default implementation copies the selected ranges.
@@ -843,42 +835,20 @@ mod tests {
     use std::ops::Range;
 
     #[test]
-    fn in_progress_compact_byte_views_own_their_buffers() {
+    fn public_in_progress_array_factory_copies_source_rows() {
         let source = Arc::new(StringViewArray::from_iter([
-            Some("a string long enough to use a data buffer"),
+            Some("a string longer than an inline view"),
             None,
-            Some("another long string stored outside the view"),
+            Some("short"),
         ]));
-        let source_buffer = source.data_buffers()[0].as_ptr();
-        let mut target = create_in_progress_array(&DataType::Utf8View, 3);
+        let mut target = create_in_progress_array(&DataType::Utf8View, 2);
         target.set_source(Some(source));
-        target.copy_rows_compact(0, 3).unwrap();
+        target.copy_rows(1, 2).unwrap();
         target.set_source(None);
         let output = target.finish().unwrap();
         let output = output.as_string_view();
-        assert_eq!(output.value(0), "a string long enough to use a data buffer");
-        assert!(output.is_null(1));
-        assert_eq!(
-            output.value(2),
-            "another long string stored outside the view"
-        );
-        assert_ne!(output.data_buffers()[0].as_ptr(), source_buffer);
-    }
-
-    #[test]
-    fn compact_byte_views_reserve_for_selected_rows() {
-        let value = "long string value held outside the view";
-        let source = Arc::new(StringViewArray::from_iter_values(std::iter::repeat_n(
-            value, 1_000,
-        )));
-        let mut target = create_in_progress_array(&DataType::Utf8View, 1);
-        target.set_source(Some(source));
-        target.copy_rows_compact(0, 1).unwrap();
-        target.set_source(None);
-        let output = target.finish().unwrap();
-        let output = output.as_string_view();
-        assert_eq!(output.value(0), value);
-        assert!(output.data_buffers()[0].capacity() < 16 * 1024);
+        assert!(output.is_null(0));
+        assert_eq!(output.value(1), "short");
     }
 
     #[test]
