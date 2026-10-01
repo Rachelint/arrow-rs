@@ -722,7 +722,10 @@ impl BatchCoalescer {
 }
 
 /// Return a new `InProgressArray` for the given data type
-fn create_in_progress_array(data_type: &DataType, batch_size: usize) -> Box<dyn InProgressArray> {
+pub fn create_in_progress_array(
+    data_type: &DataType,
+    batch_size: usize,
+) -> Box<dyn InProgressArray> {
     macro_rules! instantiate_primitive {
         ($t:ty) => {
             Box::new(InProgressPrimitiveArray::<$t>::new(
@@ -755,7 +758,7 @@ fn create_in_progress_array(data_type: &DataType, batch_size: usize) -> Box<dyn 
 /// [`StringViewArray`], etc.).
 ///
 /// [`StringViewArray`]: arrow_array::StringViewArray
-trait InProgressArray: std::fmt::Debug + Send + Sync {
+pub trait InProgressArray: std::fmt::Debug + Send + Sync {
     /// Set the source array.
     ///
     /// Calls to [`Self::copy_rows`] will copy rows from this array into the
@@ -769,11 +772,19 @@ trait InProgressArray: std::fmt::Debug + Send + Sync {
     /// Return an error if the source array is not set
     fn copy_rows(&mut self, offset: usize, len: usize) -> Result<(), ArrowError>;
 
+    /// Copy a contiguous range while packing byte-view values into buffers
+    /// owned by the destination. Other array types use [`Self::copy_rows`].
+    /// This is useful when the destination must not retain a large shared
+    /// source buffer, for example when building independently freed buckets.
+    fn copy_rows_compact(&mut self, offset: usize, len: usize) -> Result<(), ArrowError> {
+        self.copy_rows(offset, len)
+    }
+
     /// Copy rows selected by `filter` from the current source array.
     ///
-    /// The default implementation calls [`Self::copy_rows_by_selection`]
+    /// The default implementation copies the selected ranges.
     fn copy_rows_by_filter(&mut self, filter: &FilterPredicate) -> Result<(), ArrowError> {
-        self.copy_rows_by_selection(filter.selection())
+        copy_rows_by_selection(self, filter.selection())
     }
 
     /// Copy rows selected by a [`FilterPredicate`] from `source`.
@@ -793,27 +804,25 @@ trait InProgressArray: std::fmt::Debug + Send + Sync {
         result
     }
 
-    /// Copy rows described by a [`FilterSelection`] from the current source array.
-    ///
-    /// You typically get a [`FilterSelection`] from [`FilterPredicate::selection`].
-    ///
-    /// Note: The source array is set by [`Self::set_source`].
-    fn copy_rows_by_selection(&mut self, selection: FilterSelection<'_>) -> Result<(), ArrowError> {
-        match selection {
-            FilterSelection::None => Ok(()),
-            FilterSelection::All { len } => self.copy_rows(0, len),
-            FilterSelection::Slices(slices) => {
-                slices.try_for_each(|(start, end)| self.copy_rows(start, end - start))
-            }
-            FilterSelection::Indices(indices) => indices.try_for_each(|idx| self.copy_rows(idx, 1)),
-        }
-    }
-
     /// Finish the currently in-progress array and return it as an `ArrayRef`
     fn finish(&mut self) -> Result<ArrayRef, ArrowError>;
 
     /// Get the number of bytes this array is using
     fn size(&self) -> usize;
+}
+
+pub(crate) fn copy_rows_by_selection<T: InProgressArray + ?Sized>(
+    target: &mut T,
+    selection: FilterSelection<'_>,
+) -> Result<(), ArrowError> {
+    match selection {
+        FilterSelection::None => Ok(()),
+        FilterSelection::All { len } => target.copy_rows(0, len),
+        FilterSelection::Slices(slices) => {
+            slices.try_for_each(|(start, end)| target.copy_rows(start, end - start))
+        }
+        FilterSelection::Indices(indices) => indices.try_for_each(|idx| target.copy_rows(idx, 1)),
+    }
 }
 
 #[cfg(test)]
@@ -832,6 +841,29 @@ mod tests {
     use arrow_schema::{DataType, Field, Schema};
     use rand::{RngExt, SeedableRng};
     use std::ops::Range;
+
+    #[test]
+    fn in_progress_compact_byte_views_own_their_buffers() {
+        let source = Arc::new(StringViewArray::from_iter([
+            Some("a string long enough to use a data buffer"),
+            None,
+            Some("another long string stored outside the view"),
+        ]));
+        let source_buffer = source.data_buffers()[0].as_ptr();
+        let mut target = create_in_progress_array(&DataType::Utf8View, 3);
+        target.set_source(Some(source));
+        target.copy_rows_compact(0, 3).unwrap();
+        target.set_source(None);
+        let output = target.finish().unwrap();
+        let output = output.as_string_view();
+        assert_eq!(output.value(0), "a string long enough to use a data buffer");
+        assert!(output.is_null(1));
+        assert_eq!(
+            output.value(2),
+            "another long string stored outside the view"
+        );
+        assert_ne!(output.data_buffers()[0].as_ptr(), source_buffer);
+    }
 
     #[test]
     fn test_coalesce() {

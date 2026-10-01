@@ -58,6 +58,8 @@ pub(crate) struct InProgressByteViewArray<B: ByteViewType> {
     completed_buffers_size: usize,
     /// The size in bytes from [`Self::source`] that it is being used in [`Self::completed`]
     size_of_completed_buffers_from_current_source: usize,
+    /// Force local byte buffers for independently released destinations.
+    compact_strings: bool,
 }
 
 struct Source {
@@ -95,6 +97,7 @@ impl<B: ByteViewType> InProgressByteViewArray<B> {
             completed: vec![],
             completed_buffers_size: 0,
             size_of_completed_buffers_from_current_source: 0,
+            compact_strings: false,
             buffer_source,
             _phantom: PhantomData,
         }
@@ -421,13 +424,20 @@ impl<B: ByteViewType> InProgressArray for InProgressByteViewArray<B> {
 
         // Copying the strings into a buffer can be time-consuming so
         // only do it if the array is sparse
-        if source.need_gc {
+        if source.need_gc || self.compact_strings {
             self.append_views_and_copy_strings(views, source.ideal_buffer_size, buffers);
         } else {
             self.append_views_and_update_buffer_index(views, buffers, true);
         }
         self.source = Some(source);
         Ok(())
+    }
+
+    fn copy_rows_compact(&mut self, offset: usize, len: usize) -> Result<(), ArrowError> {
+        self.compact_strings = true;
+        let result = self.copy_rows(offset, len);
+        self.compact_strings = false;
+        result
     }
 
     fn copy_rows_by_filter(&mut self, filter: &FilterPredicate) -> Result<(), ArrowError> {

@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-use crate::coalesce::InProgressArray;
+use crate::coalesce::{InProgressArray, copy_rows_by_selection};
 use crate::filter::{FilterIndices, FilterPredicate, FilterSelection, FilterSlices};
 use arrow_array::cast::AsArray;
 use arrow_array::{Array, ArrayRef, ArrowPrimitiveType, PrimitiveArray};
@@ -202,7 +202,7 @@ impl<T: ArrowPrimitiveType + Debug> InProgressArray for InProgressPrimitiveArray
                 Ok(())
             }
             // Other selection shapes reuse the generic copy_rows path.
-            selection => self.copy_rows_by_selection(selection),
+            selection => copy_rows_by_selection(self, selection),
         }
     }
 
