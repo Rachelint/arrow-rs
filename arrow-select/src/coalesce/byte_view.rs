@@ -425,7 +425,18 @@ impl<B: ByteViewType> InProgressArray for InProgressByteViewArray<B> {
         // Copying the strings into a buffer can be time-consuming so
         // only do it if the array is sparse
         if source.need_gc || self.compact_strings {
-            self.append_views_and_copy_strings(views, source.ideal_buffer_size, buffers);
+            // `source` can cover a whole reordered input batch while `views`
+            // covers just one destination. Reserve only the selected bytes.
+            let view_buffer_size = if self.compact_strings {
+                views
+                    .iter()
+                    .map(|view| ByteView::from(*view).length as usize)
+                    .filter(|length| *length > MAX_INLINE_VIEW_LEN as usize)
+                    .sum()
+            } else {
+                source.ideal_buffer_size
+            };
+            self.append_views_and_copy_strings(views, view_buffer_size, buffers);
         } else {
             self.append_views_and_update_buffer_index(views, buffers, true);
         }

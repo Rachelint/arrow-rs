@@ -866,6 +866,22 @@ mod tests {
     }
 
     #[test]
+    fn compact_byte_views_reserve_for_selected_rows() {
+        let value = "long string value held outside the view";
+        let source = Arc::new(StringViewArray::from_iter_values(std::iter::repeat_n(
+            value, 1_000,
+        )));
+        let mut target = create_in_progress_array(&DataType::Utf8View, 1);
+        target.set_source(Some(source));
+        target.copy_rows_compact(0, 1).unwrap();
+        target.set_source(None);
+        let output = target.finish().unwrap();
+        let output = output.as_string_view();
+        assert_eq!(output.value(0), value);
+        assert!(output.data_buffers()[0].capacity() < 16 * 1024);
+    }
+
+    #[test]
     fn test_coalesce() {
         let batch = uint32_batch(0..8);
         Test::new("coalesce")
