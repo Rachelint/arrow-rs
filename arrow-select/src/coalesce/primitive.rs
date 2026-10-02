@@ -149,6 +149,12 @@ impl<T: ArrowPrimitiveType + Debug> InProgressArray for InProgressPrimitiveArray
         self.source = source;
     }
 
+    fn set_source_range(&mut self, source: ArrayRef, offset: usize, len: usize) -> usize {
+        assert!(offset <= source.len() && len <= source.len() - offset);
+        self.source = Some(source);
+        offset
+    }
+
     fn copy_rows(&mut self, offset: usize, len: usize) -> Result<(), ArrowError> {
         self.ensure_capacity();
 

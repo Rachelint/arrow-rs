@@ -100,6 +100,22 @@ impl<B: ByteViewType> InProgressByteViewArray<B> {
         }
     }
 
+    fn set_source_with_size(&mut self, source: Option<ArrayRef>, ideal_buffer_size: usize) {
+        self.completed_buffers_size += self.size_of_completed_buffers_from_current_source;
+        self.size_of_completed_buffers_from_current_source = 0;
+
+        self.source = source.map(|array| {
+            let s = array.as_byte_view::<B>();
+            let actual_buffer_size = s.data_buffers().iter().map(|b| b.capacity()).sum::<usize>();
+            let need_gc = ideal_buffer_size != 0 && actual_buffer_size > ideal_buffer_size * 2;
+            Source {
+                array,
+                need_gc,
+                ideal_buffer_size,
+            }
+        });
+    }
+
     /// Allocate space for output views and nulls if needed
     ///
     /// This is done on write (when we know it is necessary) rather than
@@ -358,34 +374,30 @@ impl<B: ByteViewType> InProgressByteViewArray<B> {
 
 impl<B: ByteViewType> InProgressArray for InProgressByteViewArray<B> {
     fn set_source(&mut self, source: Option<ArrayRef>) {
-        // If used values from source, add only the size that was used
-        self.completed_buffers_size += self.size_of_completed_buffers_from_current_source;
-        self.size_of_completed_buffers_from_current_source = 0;
-
-        self.source = source.map(|array| {
-            let s = array.as_byte_view::<B>();
-
-            let (need_gc, ideal_buffer_size) = if s.data_buffers().is_empty() {
-                (false, 0)
-            } else {
-                let ideal_buffer_size = s.total_buffer_bytes_used();
-                // We don't use get_buffer_memory_size here, because gc is for the contents of the
-                // data buffers, not views and nulls.
-                let actual_buffer_size =
-                    s.data_buffers().iter().map(|b| b.capacity()).sum::<usize>();
-                // copying strings is expensive, so only do it if the array is
-                // sparse (uses at least 2x the memory it needs)
-                let need_gc =
-                    ideal_buffer_size != 0 && actual_buffer_size > (ideal_buffer_size * 2);
-                (need_gc, ideal_buffer_size)
-            };
-
-            Source {
-                array,
-                need_gc,
-                ideal_buffer_size,
-            }
+        let ideal_buffer_size = source.as_ref().map_or(0, |array| {
+            array.as_byte_view::<B>().total_buffer_bytes_used()
         });
+        self.set_source_with_size(source, ideal_buffer_size);
+    }
+
+    fn set_source_range(&mut self, source: ArrayRef, offset: usize, len: usize) -> usize {
+        assert!(offset <= source.len() && len <= source.len() - offset);
+        let s = source.as_byte_view::<B>();
+        // Match the garbage-collection decision for source.slice(offset, len)
+        // without allocating a sliced array.
+        let ideal_buffer_size = s.views()[offset..offset + len]
+            .iter()
+            .map(|view| {
+                let length = *view as u32;
+                if length > MAX_INLINE_VIEW_LEN {
+                    length as usize
+                } else {
+                    0
+                }
+            })
+            .sum();
+        self.set_source_with_size(Some(source), ideal_buffer_size);
+        offset
     }
 
     fn copy_rows(&mut self, offset: usize, len: usize) -> Result<(), ArrowError> {

@@ -765,6 +765,16 @@ pub trait InProgressArray: std::fmt::Debug + Send + Sync {
     /// current in-progress array
     fn set_source(&mut self, source: Option<ArrayRef>);
 
+    /// Set a range of the source array for subsequent calls to [`Self::copy_rows`].
+    ///
+    /// Returns the offset to pass to [`Self::copy_rows`] for the first row of
+    /// the range. The default implementation slices the source. Specialized
+    /// implementations may use the original array without creating a slice.
+    fn set_source_range(&mut self, source: ArrayRef, offset: usize, len: usize) -> usize {
+        self.set_source(Some(source.slice(offset, len)));
+        0
+    }
+
     /// Copy rows from the current source array into the in-progress array
     ///
     /// Note: The source array is set by [`Self::set_source`].
@@ -849,6 +859,50 @@ mod tests {
         let output = output.as_string_view();
         assert!(output.is_null(0));
         assert_eq!(output.value(1), "short");
+    }
+
+    #[test]
+    fn source_range_matches_sliced_source() {
+        let strings = (0..64)
+            .map(|i| format!("long string value {i:08}"))
+            .collect::<Vec<_>>();
+        let cases: Vec<(DataType, ArrayRef)> = vec![
+            (
+                DataType::Int64,
+                Arc::new(Int64Array::from_iter_values(0..64)),
+            ),
+            (
+                DataType::Utf8View,
+                Arc::new(StringViewArray::from_iter_values(
+                    strings.iter().map(String::as_str),
+                )),
+            ),
+        ];
+        for (data_type, source) in cases {
+            let mut sliced = create_in_progress_array(&data_type, 8);
+            sliced.set_source(Some(source.slice(7, 3)));
+            sliced.copy_rows(0, 3).unwrap();
+            sliced.set_source(None);
+            let sliced = sliced.finish().unwrap();
+
+            let mut ranged = create_in_progress_array(&data_type, 8);
+            let offset = ranged.set_source_range(source, 7, 3);
+            ranged.copy_rows(offset, 3).unwrap();
+            ranged.set_source(None);
+            let ranged = ranged.finish().unwrap();
+            assert_eq!(sliced.to_data(), ranged.to_data());
+            if data_type == DataType::Utf8View {
+                let buffer_size = |array: &ArrayRef| {
+                    array
+                        .as_string_view()
+                        .data_buffers()
+                        .iter()
+                        .map(|buffer| buffer.capacity())
+                        .sum::<usize>()
+                };
+                assert_eq!(buffer_size(&sliced), buffer_size(&ranged));
+            }
+        }
     }
 
     #[test]
