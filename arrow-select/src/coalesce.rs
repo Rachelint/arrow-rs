@@ -35,7 +35,8 @@ mod fixed_size_binary;
 mod generic;
 mod primitive;
 
-use byte_view::InProgressByteViewArray;
+pub use byte_view::InProgressByteViewArray;
+pub use byte_view::scatter::{StringViewScatterTarget, scatter_string_views};
 use fixed_size_binary::InProgressFixedSizeBinaryArray;
 use generic::GenericInProgressArray;
 use primitive::InProgressPrimitiveArray;

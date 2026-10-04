@@ -15,6 +15,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
+pub(crate) mod scatter;
+
 use crate::coalesce::InProgressArray;
 use crate::filter::{FilterPredicate, FilterSelection};
 use arrow_array::cast::AsArray;
@@ -36,7 +38,7 @@ use std::sync::Arc;
 ///
 /// [`StringViewArray`]: arrow_array::StringViewArray
 /// [`BinaryViewArray`]: arrow_array::BinaryViewArray
-pub(crate) struct InProgressByteViewArray<B: ByteViewType> {
+pub struct InProgressByteViewArray<B: ByteViewType> {
     /// The source array and information
     source: Option<Source>,
     /// the target batch size (and thus size for views allocation)
@@ -83,7 +85,8 @@ impl<B: ByteViewType> std::fmt::Debug for InProgressByteViewArray<B> {
 }
 
 impl<B: ByteViewType> InProgressByteViewArray<B> {
-    pub(crate) fn new(batch_size: usize) -> Self {
+    /// Create a builder that emits arrays with the specified target batch size.
+    pub fn new(batch_size: usize) -> Self {
         let buffer_source = BufferSource::new();
 
         Self {
